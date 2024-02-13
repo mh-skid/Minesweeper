@@ -1,0 +1,71 @@
+
+let canvas = document.getElementById('game');
+let context = canvas.getContext('2d');
+let width = canvas.width
+let height = canvas.height
+
+var timer = 0;
+
+let things = []
+let Mouse = {
+    X:0,
+    Y:0,
+}
+
+function radNum(min, max) {
+    return min + (Math.random() * max);
+}
+
+document.addEventListener("mousemove", () => {
+    Mouse.X = event.clientX
+    Mouse.Y = event.clientY - 150
+});
+
+
+for(let i=0;i<800;i++){
+    things.push([radNum(0,width),radNum(0,height),radNum(0,100),0,0])
+}
+
+function loop(){
+    timer++
+
+    context.fillStyle = `rgb(0,0,5)`
+    context.clearRect(0,0,width,height)
+
+    context.fillStyle = `rgb(255,100,100)`
+    context.fillRect(Mouse.X,Mouse.Y,3,3)
+
+    context.fillStyle = `rgba(150,150,255,.1)`
+    context.fillRect(width/4,25,width/2,3)
+
+    for(let i=0;i<things.length;i++){
+        let item = things[i]
+
+        item[0] += Math.sin(((timer/6)+ item[2])/5)/5
+        item[1] += Math.cos((((timer+150)/4)+ item[2])/8)/5
+
+        let distX = (((Mouse.X - item[0])))
+        let distY = (((Mouse.Y - item[1])))
+        if (Math.abs(distX)<80 && Math.abs(distY)<80){
+            item[3]-=5/distX
+            item[4]-=5/distY
+        }
+        item[3] *= .95
+        item[4] *= .95
+        item[0] += item[3]
+        item[1] += item[4]
+
+
+        let x = item[0]
+        let y = item[1]
+
+
+        context.fillStyle = `rgba(245,245,245,${.2 + (Math.sin(timer/24)/14)})`
+        context.fillRect(x,y,3,3)
+    }
+
+    requestAnimationFrame(loop)
+};
+
+
+requestAnimationFrame(loop)
